@@ -32,16 +32,34 @@ A small GPT-style language model built from scratch in PyTorch and trained on ch
 
 | Metric | Value |
 |---|---|
-| Final train loss | [fill in from your run] |
-| Final validation loss | [fill in from your run] |
-| Training time (Colab T4 GPU) | [fill in from your run] |
+| Final train loss | [1.4420] |
+| Final validation loss | [1.6375] |
+| Training time (Colab T4 GPU) | [288s] |
 
 Loss curves are plotted in the notebook.
 
 ### Sample generated text
 
 ```
-[paste a short sample from your own run here]
+[GLOUCESTER:
+Romeo, holy he banks appares their of the valoucest the
+with a missed of the of as joises;
+Inder a many to tame to that prison, and the meous of that tongue cousin.
+
+MENENIUS:
+No, my both uself, sir.
+
+BRUTUS:
+We will not say, Partiant, then, so so not of the curt
+stands of a cause with mouth art but them partitor,
+Titled sleeps this no morrow.
+3 HENRY VI:
+Anting not spiring, for think the words? The beast I land,
+Hath hand but that I'll be in the breath to the Towas of Hertings.
+
+KING HENRY VI:
+What you shall I may not us grave to your before,
+Make not a man true some for must him]
 ```
 
 The model is small and trained for a few minutes, so the output imitates the style of Shakespeare (character names, line breaks, archaic words) but does not always make sense. This is expected at this scale.
