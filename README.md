@@ -1,107 +1,249 @@
-# Mini GPT: A Decoder-Only Transformer from Scratch in PyTorch
+<div align="center">
 
-A small GPT-style language model built from scratch in PyTorch and trained on character-level text (Tiny Shakespeare). The goal of this project is to understand how GPT models work internally by implementing every component by hand, without using `nn.Transformer` or Hugging Face.
+# 🤖 Mini GPT
+
+### Decoder-Only Transformer from Scratch
+
+![PyTorch](https://img.shields.io/badge/Framework-PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)
+![Python](https://img.shields.io/badge/Language-Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Parameters](https://img.shields.io/badge/Parameters-~3.23M-blueviolet?style=for-the-badge)
+![Colab](https://img.shields.io/badge/Trained_on-Colab_T4_GPU-F9AB00?style=for-the-badge&logo=googlecolab&logoColor=white)
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/muneer-ahmad10/mini-gpt-pytorch/blob/main/Mini_GPT_Colab.ipynb)
 
-## What is implemented
+</div>
 
-- **Token and positional embeddings:** convert token IDs to vectors and add position information, since attention has no sense of order
-- **Causal multi-head self-attention:** scaled dot-product attention with a lower-triangular mask, so each token can only attend to itself and earlier tokens
-- **Transformer blocks:** attention and feed-forward layers with residual connections and LayerNorm
-- **Training loop:** next-token prediction with cross-entropy loss, AdamW, gradient clipping and a train/validation split
-- **Autoregressive generation:** predict one token, append it, repeat, with temperature and top-k sampling
+---
 
-## Model configuration
+A GPT-style character-level language model implemented from scratch in PyTorch. This project explores the core components behind autoregressive language models, including causal self-attention, Transformer blocks, next-token prediction, model training, and text generation.
 
-| Setting | Value |
-|---|---|
-| Layers | 4 |
-| Attention heads | 4 |
-| Embedding dimension | 256 |
-| Context length | 128 tokens |
+The model was trained on the Tiny Shakespeare dataset to learn character-level patterns and generate Shakespeare-style text.
+
+## 📑 Table of Contents
+
+- [Project Highlights](#-project-highlights)
+- [Architecture](#-architecture)
+- [Key Implementation Details](#-key-implementation-details)
+- [Dataset](#-dataset)
+- [Training Results](#-training-results)
+- [Tech Stack](#-tech-stack)
+- [Run the Project](#-run-the-project)
+- [What I Learned](#-what-i-learned)
+- [Current Limitations](#-current-limitations)
+- [Potential Improvements](#-potential-improvements)
+- [Repository Structure](#-repository-structure)
+- [Conclusion](#-conclusion)
+
+---
+
+## ✨ Project Highlights
+
+| | Detail |
+|:--|:--|
+| 🏗️ **Architecture** | Decoder-only Transformer |
+| 🔥 **Framework** | PyTorch |
+| 🧮 **Parameters** | Approximately 3.23 million |
+| 🧱 **Transformer blocks** | 4 |
+| 🎯 **Attention heads per block** | 4 |
+| 📐 **Embedding dimension** | 256 |
+| 🪟 **Context window** | 128 characters |
+| 🔤 **Tokenization** | Character-level |
+| 📚 **Training dataset** | Tiny Shakespeare |
+| ☁️ **Training environment** | Google Colab with NVIDIA T4 GPU |
+
+---
+
+## 🏛️ Architecture
+
+The model follows a GPT-style autoregressive architecture, predicting the next character using the preceding context.
+
+```text
+Input Text
+    ↓
+Character-Level Tokenization
+    ↓
+Token Embeddings + Positional Embeddings
+    ↓
+4 × Transformer Blocks
+    ├── Layer Normalization
+    ├── Causal Multi-Head Self-Attention
+    ├── Residual Connection
+    ├── Layer Normalization
+    ├── Feed-Forward Network (GELU)
+    └── Residual Connection
+    ↓
+Final Layer Normalization
+    ↓
+Linear Language-Model Head
+    ↓
+Next-Character Probability Distribution
+    ↓
+Autoregressive Text Generation
+```
+
+### ⚙️ Model Configuration
+
+| Component | Configuration |
+|:--|:--|
+| Vocabulary size | Approximately 65 characters |
+| Token embeddings | 256 dimensions |
+| Positional embeddings | Learned |
+| Transformer blocks | 4 |
+| Attention heads per block | 4 |
+| Dimension per attention head | 64 |
+| Feed-forward hidden dimension | 1,024 |
+| Maximum context length | 128 characters |
 | Dropout | 0.2 |
-| Parameters | ~3.2M |
-| Vocabulary | character-level (~65 characters) |
+| Output | Next-character logits |
+| **Total parameters** | **Approximately 3.23M** |
 
-## Dataset
+---
 
-[Tiny Shakespeare](https://raw.githubusercontent.com/karpathy/char-rnn/master/data/tinyshakespeare/input.txt), about 1.1 million characters, split 90% for training and 10% for validation. The notebook downloads it automatically.
+## 🔧 Key Implementation Details
 
-## Results
+### 1️⃣ Character-Level Tokenization
 
-| Metric | Value |
-|---|---|
-| Final train loss | 1.4420 |
+- Built a character-to-integer mapping from the dataset vocabulary.
+- Converted text into integer sequences for model training.
+- Used a context window of up to 128 characters to predict the next character.
+
+### 2️⃣ Causal Multi-Head Self-Attention
+
+- Implemented query, key, and value projections using PyTorch linear layers.
+- Applied a lower-triangular causal mask to prevent the model from attending to future positions.
+- Used scaled dot-product attention, softmax, and dropout.
+- Combined multiple attention heads to learn relationships between characters.
+
+### 3️⃣ Transformer Blocks
+
+- Implemented four Transformer blocks with pre-normalization.
+- Used residual connections around attention and feed-forward sublayers.
+- Built feed-forward networks using linear layers, GELU activation, and dropout.
+- Combined token and learned positional embeddings to represent character identity and sequence position.
+
+### 4️⃣ Training Pipeline
+
+- Trained the model using next-token prediction and cross-entropy loss.
+- Used the AdamW optimizer with a learning rate of `3e-4`.
+- Applied gradient clipping with a maximum norm of `1.0`.
+- Split the dataset into training and validation sets.
+- Monitored training and validation loss during training.
+
+### 5️⃣ Autoregressive Text Generation
+
+- Generated text one character at a time using the preceding context.
+- Limited the context to the model's maximum block size.
+- Implemented temperature scaling and top-k sampling to control generation diversity.
+
+---
+
+## 📚 Dataset
+
+The project uses the **Tiny Shakespeare** text dataset.
+
+| Property | Value |
+|:--|:--|
+| Dataset | Tiny Shakespeare |
+| Dataset size | 1,115,394 characters |
+| Training split | 90% |
+| Validation split | 10% |
+| Prediction task | Next-character prediction |
+
+> The model learns statistical patterns from Shakespeare's writing rather than retrieving or memorizing answers from a knowledge base. Since it uses character-level tokenization and a relatively small architecture, its generated text can contain grammatical inconsistencies and incoherent passages.
+
+---
+
+## 📈 Training Results
+
+The following results are from the training run documented in the notebook.
+
+| Metric | Result |
+|:--|--:|
+| Reported training iterations | 3,000 |
+| Final training loss | 1.4420 |
 | Final validation loss | 1.6375 |
-| Training time (Colab T4 GPU) | 288s |
+| Training time | Approximately 288 seconds |
+| Hardware | Google Colab NVIDIA T4 GPU |
 
-Loss curves are plotted in the notebook.
+> 💡 **How to interpret these results:** The training loss measures the model's next-character prediction error on training data, while validation loss measures the same objective on held-out data. These values help assess learning and generalization; they are not accuracy percentages or direct measures of text quality.
 
-### Sample generated text
+---
 
-```
-GLOUCESTER:
-Romeo, holy he banks appares their of the valoucest the
-with a missed of the of as joises;
-Inder a many to tame to that prison, and the meous of that tongue cousin.
+## 🧰 Tech Stack
 
-MENENIUS:
-No, my both uself, sir.
+| Category | Tools |
+|:--|:--|
+| **Language** | Python |
+| **Deep learning** | PyTorch |
+| **Data processing** | Python standard library |
+| **Training environment** | Google Colab |
+| **Dataset** | Tiny Shakespeare |
 
-BRUTUS:
-We will not say, Partiant, then, so so not of the curt
-stands of a cause with mouth art but them partitor,
-Titled sleeps this no morrow.
-3 HENRY VI:
-Anting not spiring, for think the words? The beast I land,
-Hath hand but that I'll be in the breath to the Towas of Hertings.
+---
 
-KING HENRY VI:
-What you shall I may not us grave to your before,
-Make not a man true some for must him
-```
+## 🚀 Run the Project
 
-The model is small and trained for a few minutes, so the output imitates the style of Shakespeare (character names, line breaks, archaic words) but does not always make sense. This is expected at this scale.
+The implementation is provided as a Jupyter notebook.
 
-## How to run
+1. Open [`Mini_GPT_Colab.ipynb`](./Mini_GPT_Colab.ipynb).
+2. Upload the notebook to [Google Colab](https://colab.research.google.com/).
+3. Select a GPU runtime if available.
+4. Run the notebook cells in order.
+5. Review the model configuration, training and validation loss, and generated text.
 
-1. Click the **Open In Colab** badge above (or upload `Mini_GPT_Colab.ipynb` to [Google Colab](https://colab.research.google.com)).
-2. Go to **Runtime → Change runtime type** and select **T4 GPU**.
-3. Run all cells. Training takes roughly 5 to 10 minutes.
+The notebook contains the model implementation, training loop, evaluation steps, and text-generation code.
 
-To run locally, install the dependencies and open the notebook in Jupyter:
+---
 
-```bash
-pip install torch matplotlib jupyter
-```
+## 🎓 What I Learned
 
-## Project structure
+- How decoder-only Transformer language models are structured.
+- How causal masking prevents information leakage from future tokens.
+- How multi-head self-attention models relationships within a sequence.
+- How token and positional embeddings are combined.
+- How cross-entropy loss, AdamW, and gradient clipping are used during training.
+- How autoregressive generation and sampling parameters affect generated text.
+- How to monitor training and validation loss when evaluating a language model.
 
-```
+---
+
+## ⚠️ Current Limitations
+
+- Character-level tokenization is less efficient than subword tokenization for many language-modeling tasks.
+- The model's 128-character context window limits the amount of preceding text it can use.
+- The approximately 3.23M-parameter model is intended for learning and experimentation, not production-scale language understanding.
+- Generated text may be repetitive, inconsistent, or incoherent.
+- The project currently focuses on training and generation rather than deployment as a production application.
+
+---
+
+## 🔮 Potential Improvements
+
+- [ ] Add a saved model checkpoint and a separate inference workflow.
+- [ ] Save the model configuration alongside the trained weights.
+- [ ] Add a dependency file for easier environment setup.
+- [ ] Compare generated text under different temperature and top-k settings.
+- [ ] Experiment with subword tokenization, larger datasets, and longer context windows.
+- [ ] Compare model configurations using consistent training and validation procedures.
+
+---
+
+## 🗂️ Repository Structure
+
+```text
 mini-gpt-pytorch/
-├── Mini_GPT_Colab.ipynb   # full implementation, training and generation
+├── Mini_GPT_Colab.ipynb
 └── README.md
 ```
 
-## Key concepts demonstrated
+---
 
-- Why a **causal mask** is needed so the model cannot see future tokens during training
-- Why **positional embeddings** are required in attention-based models
-- How **multi-head attention** lets different heads learn different relationships
-- How **residual connections** and **LayerNorm** stabilize deep networks
-- How GPT generates text one token at a time
+## 🏁 Conclusion
 
-## Limitations and next steps
+This project demonstrates a from-scratch implementation of a small GPT-style language model using PyTorch. It brings together causal multi-head self-attention, Transformer blocks, next-character prediction, model optimization, validation, and autoregressive text generation in a single learning project.
 
-- Character-level tokenization is simple but inefficient. A BPE tokenizer would give better results.
-- The model is far too small to produce coherent long text.
-- Possible extensions: train on a larger dataset, add a BPE tokenizer, add weight tying, try different context lengths, and compare with a pretrained GPT-2 from Hugging Face.
+<div align="center">
 
-## Acknowledgments
+**GitHub:** [muneer-ahmad10/mini-gpt-pytorch](https://github.com/muneer-ahmad10/mini-gpt-pytorch)
 
-The Tiny Shakespeare dataset comes from Andrej Karpathy's [char-rnn](https://github.com/karpathy/char-rnn) repository. The overall design follows the standard GPT architecture from "Attention Is All You Need" (Vaswani et al., 2017) and the GPT-2 paper.
-
-## Author
-
-**Muneer Ahmad Dar**: [GitHub](https://github.com/muneer-ahmad10)
+</div>
